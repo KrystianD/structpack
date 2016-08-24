@@ -1,0 +1,6 @@
+language: cpp
+before_install:
+  - sudo apt-get install libgtest-dev
+script:
+  - cd tests/
+  - make
