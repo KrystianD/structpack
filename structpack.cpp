@@ -34,15 +34,39 @@ int StructPack::doPack()
 			width += *format - '0';
 		}
 
-		switch (*format) {
-		case 'B': pack_uint8(va_arg(arg, unsigned int)); break;
-		case 'L': pack_uint32(va_arg(arg, uint32_t)); break;
-		case 'f': pack_float(va_arg(arg, double)); break;
-		case 's':
-			str = va_arg(arg, const char*);
-			strLen = va_arg(arg, unsigned int);
-			pack_string(str, strLen, width);
-			break;
+		if (width > 0) {
+			switch (*format) {
+			case 'B': {
+				uint8_t* ptr = va_arg(arg, uint8_t*);
+				while (width--)
+					pack_uint8(*ptr++);
+				break;
+			}
+			case 'L': {
+				uint32_t* ptr = va_arg(arg, uint32_t*);
+				while (width--)
+					pack_uint32(*ptr++);
+				break;
+			}
+			case 'f': {
+				float* ptr = va_arg(arg, float*);
+				while (width--)
+					pack_float(*ptr++);
+				break;
+			}
+			case 's': {
+				str = va_arg(arg, const char*);
+				strLen = va_arg(arg, unsigned int);
+				pack_string(str, strLen, width);
+				break;
+			}
+			}
+		} else {
+			switch (*format) {
+			case 'B': pack_uint8(va_arg(arg, unsigned int)); break;
+			case 'L': pack_uint32(va_arg(arg, uint32_t)); break;
+			case 'f': pack_float(va_arg(arg, double)); break;
+			}
 		}
 	}
 
@@ -99,15 +123,38 @@ int StructPack::doUnpack()
 			width += *format - '0';
 		}
 
-		switch (*format) {
-		case 'B': unpack_uint8(va_arg(arg, uint8_t*)); break;
-		case 'L': unpack_uint32(va_arg(arg, uint32_t*)); break;
-		case 'f': unpack_float(va_arg(arg, float*)); break;
-		case 's':
-			str = va_arg(arg, char*);
-			strLen = va_arg(arg, unsigned int);
-			unpack_string(str, strLen, width);
-			break;
+		if (width > 0) {
+			switch (*format) {
+			case 'B': {
+				uint8_t* ptr = va_arg(arg, uint8_t*);
+				while (width--)
+					unpack_uint8(ptr++);
+				break;
+			}
+			case 'L': {
+				uint32_t* ptr = va_arg(arg, uint32_t*);
+				while (width--)
+					unpack_uint32(ptr++);
+				break;
+			}
+			case 'f': {
+				float* ptr = va_arg(arg, float*);
+				while (width--)
+					unpack_float(ptr++);
+				break;
+			}
+			case 's':
+				str = va_arg(arg, char*);
+				strLen = va_arg(arg, unsigned int);
+				unpack_string(str, strLen, width);
+				break;
+			}
+		} else {
+			switch (*format) {
+			case 'B': unpack_uint8(va_arg(arg, uint8_t*)); break;
+			case 'L': unpack_uint32(va_arg(arg, uint32_t*)); break;
+			case 'f': unpack_float(va_arg(arg, float*)); break;
+			}
 		}
 	}
 

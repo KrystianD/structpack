@@ -49,6 +49,33 @@ TEST(structpack, test_string)
 	ASSERT_EQ_ARRAY(buf2, "test\x00\x00", 6);
 }
 
+TEST(structpack, test_array)
+{
+	uint8_t a[] = { 1, 2, 3, 4, 5 };
+	uint32_t b[] = { 0xaabbccdd, 0x11223344 };
+	float c[] = { 1.23, 2.45 };
+	int r = StructPack::pack(buf, 100, "5B2L2f", a, b, c);
+
+	ASSERT_EQ(r, 21);
+	ASSERT_EQ_ARRAY(buf, "\x01\x02\x03\x04\x05\xdd\xcc\xbb\xaa\x44\x33\x22\x11\xa4\x70\x9d\x3f\xcd\xcc\x1c\x40", r);
+
+	uint8_t a2[5];
+	uint32_t b2[2];
+	float c2[2];
+	r = StructPack::unpack(buf, 100, "5B2L2f", a2, b2, c2);
+
+	ASSERT_EQ(r, 21);
+	ASSERT_EQ(a2[0], 1);
+	ASSERT_EQ(a2[1], 2);
+	ASSERT_EQ(a2[2], 3);
+	ASSERT_EQ(a2[3], 4);
+	ASSERT_EQ(a2[4], 5);
+	ASSERT_EQ(b2[0], 0xaabbccdd);
+	ASSERT_EQ(b2[1], 0x11223344);
+	ASSERT_EQ(c2[0], 1.23f);
+	ASSERT_EQ(c2[1], 2.45f);
+}
+
 TEST(structpack, test_combined)
 {
 	uint32_t a = 34678, c = 1234;
